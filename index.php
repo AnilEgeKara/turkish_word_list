@@ -1,12 +1,60 @@
 <?php
-// Your code here!
-// $html = '<ul><a href="abanozlaştırabilme-ne-demektir" title="abanozlaştırabilme nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>BANOZLAŞTIRABİLME</span></a><a href="abanozlaştırıverme-ne-demektir" title="abanozlaştırıverme nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>BANOZLAŞTIRIVERME</span></a><a href="acımasızlaşabilmek-ne-demektir" title="acımasızlaşabilmek nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>CIMASIZLAŞABİLMEK</span></a><a href="ağırlaştırılabilme-ne-demektir" title="ağırlaştırılabilme nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>ĞIRLAŞTIRILABİLME</span></a><a href="ahmaklaştırabilmek-ne-demektir" title="ahmaklaştırabilmek nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>HMAKLAŞTIRABİLMEK</span></a><a href="alafrangalaştırmak-ne-demektir" title="alafrangalaştırmak nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>LAFRANGALAŞTIRMAK</span></a><a href="anlamlandırabilmek-ne-demektir" title="anlamlandırabilmek nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>NLAMLANDIRABİLMEK</span></a><a href="anlamsızlaşabilmek-ne-demektir" title="anlamsızlaşabilmek nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>NLAMSIZLAŞABİLMEK</span></a><a href="anlamsızlaştırılma-ne-demektir" title="anlamsızlaştırılma nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>NLAMSIZLAŞTIRILMA</span></a><a href="antiemperyalistlik-ne-demektir" title="antiemperyalistlik nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>NTİEMPERYALİSTLİK</span></a><a href="antipatikleştirmek-ne-demektir" title="antipatikleştirmek nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>NTİPATİKLEŞTİRMEK</span></a><a href="ayaklandırılabilme-ne-demektir" title="ayaklandırılabilme nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>YAKLANDIRILABİLME</span></a><a href="ayrıntılandırılmak-ne-demektir" title="ayrıntılandırılmak nedir ?" target="_blank"><span class="display"><b style="COLOR:RED">A</b>YRINTILANDIRILMAK</span></a></ul>';
-$url = "https://www.kelimetre.com/A-ile-baslayan-2-harfli-kelimeler";
-$html = file_get_contents($url);
-$doc = new DOMDocument();
-@$doc->loadHTML('<?xml encoding="utf-8" ?>'.$html);
-$liList = $doc->getElementsByTagName('ul');
-print_r($liList[1]->childNodes[1]->textContent);
+// Starting clock time in seconds
+$start_time = microtime(true);
+// define the turkishAlphabet
+$turkishAlphabet = array('A','B','C','Ç','D','E','F','G','Ğ','H','İ','I','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z');
+
+// create file to store results
+$twlArray = fopen("turkish_word_list_array.txt", "w");
+$twl = fopen("turkish_word_list.txt", "w");
+$twlArraySingleLine = fopen("turkish_word_list_array_single_line.txt", "w");
+$twlSingleLine = fopen("turkish_word_list_single_line.txt", "w");
+
+
+// fwrite($myFile, $liList[1]->childNodes[1]->textContent);
+for($i = 0; $i < 29; $i++){
+    var_dump('harf : '.$turkishAlphabet[$i]."\n");
+
+    $wordCount = 1 ;
+    $failCount = 0 ;
+    $endWhile = false ;
+    while(!$endWhile){
+
+        $url = "https://www.kelimetre.com/".$turkishAlphabet[$i]."-ile-baslayan-".$wordCount."-harfli-kelimeler";
+        var_dump('url : '.$url);
+        $html = file_get_contents($url);
+        $doc = new DOMDocument();
+        @$doc->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+        $liList = $doc->getElementsByTagName('ul');
+        
+        if(str_contains($html, "bulunmamaktadır")){
+            $failCount++;
+        }else{
+            $length = $liList[1]->childNodes->length;
+            for($j = 0; $j < $length;$j++){
+                fwrite($twlArray, "'".$liList[1]->childNodes[$j]->textContent."',\n");
+                fwrite($twl, $liList[1]->childNodes[$j]->textContent.",\n");
+                fwrite($twlArraySingleLine, "'".$liList[1]->childNodes[$j]->textContent."',");
+                fwrite($twlSingleLine, $liList[1]->childNodes[$j]->textContent.",");
+
+            }
+        }
+        $wordCount++ ;
+        if($failCount > 1){
+            $wordCount = 1 ;
+            $endWhile = true ;
+        }
+    }
+};
+echo("tamamlandi\n");
+// End clock time in seconds
+$end_time = microtime(true);
+  
+// Calculate script execution time
+$execution_time = ($end_time - $start_time);
+  
+echo " Execution time of script = ".$execution_time." sec";
+// var_dump($liList[1]->childNodes[0]->textContent);
 // $liValues = array();
 // foreach ($liList as $a) {
 //     $liValues[] = $a->nodeValue;
