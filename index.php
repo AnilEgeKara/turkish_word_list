@@ -54,11 +54,5 @@ $end_time = microtime(true);
 $execution_time = ($end_time - $start_time);
   
 echo " Execution time of script = ".$execution_time." sec";
-// var_dump($liList[1]->childNodes[0]->textContent);
-// $liValues = array();
-// foreach ($liList as $a) {
-//     $liValues[] = $a->nodeValue;
-// }
-// $list = "['".implode("','", $liValues)."']";
-// print_r($list);
+
 ?>
